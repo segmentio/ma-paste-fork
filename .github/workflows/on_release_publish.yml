@@ -5,17 +5,17 @@ on:
 
 jobs:
   slack-notifications:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     name: Sends a message to Slack when a package is released
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
       - run: |
           echo "${{ github.event.release.tag_name }}"
           echo "${{ github.event.release.name }}"
           echo "${{ github.event.release.body }}"
       - name: Send message to Slack API
-        uses: archive/github-actions-slack@master
+        uses: archive/github-actions-slack@433fef9978d3adae73168bfc9c5a7ce722780231  # master
         id: send-message
         with:
           slack-function: send-message
@@ -27,7 +27,7 @@ jobs:
         run: echo "The result was ${{ steps.notify.outputs.slack-result }}"
 
       - name: Send Thread Message
-        uses: archive/github-actions-slack@master
+        uses: archive/github-actions-slack@433fef9978d3adae73168bfc9c5a7ce722780231  # master
         with:
           slack-function: send-message
           slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}

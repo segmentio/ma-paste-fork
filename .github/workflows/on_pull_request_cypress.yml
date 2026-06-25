@@ -7,7 +7,7 @@ on:
 jobs:
   # run this job first to create a single timestamped id for all percy batches on parallel machines
   percy-batch-id:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     # persist job results to other jobs in the workflow
     outputs:
       result: ${{ steps.percy-batch-id.outputs.result }}
@@ -20,7 +20,7 @@ jobs:
 
   cypress:
     name: Website tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     needs: percy-batch-id
     strategy:
       fail-fast: false
@@ -35,10 +35,10 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
 
       - name: Setup Node.js 20.5
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610  # v3
         with:
           node-version: 20.5.x
 
@@ -50,7 +50,7 @@ jobs:
         run: echo "${{ needs.percy-batch-id.outputs.result }}"
 
       - name: Load Yarn cache
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c  # v3
         id: yarn_cache_id
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -59,7 +59,7 @@ jobs:
             ${{ runner.os }}-yarn
 
       - name: Node modules cache
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c  # v3
         id: node_modules_cache_id
         with:
           path: |
@@ -72,7 +72,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Wait for Netlify
-        uses: hharnisc/wait-for-netlify-action@3.2.0
+        uses: hharnisc/wait-for-netlify-action@0855dade13fa1445d67907d2b5b2ce470e38c468  # 3.2.0
         id: waitForDeployment
         with:
           site_id: ${{ secrets.NETLIFY_SITE_ID }}
@@ -80,7 +80,7 @@ jobs:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
       - name: Cypress run
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@d79d2d530a66e641eb4a5f227e13bc985c60b964  # v4
         if: ${{ !contains(github.event.pull_request.labels.*.name, '🕵🏻‍♀️ Run website visual regression') }}
         with:
           record: true
@@ -89,7 +89,7 @@ jobs:
           config: baseUrl=${{ steps.waitForDeployment.outputs.url }}
 
       - name: Cypress run with site VRT
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@d79d2d530a66e641eb4a5f227e13bc985c60b964  # v4
         if: ${{ contains(github.event.pull_request.labels.*.name, '🕵🏻‍♀️ Run website visual regression') }}
         with:
           record: true
